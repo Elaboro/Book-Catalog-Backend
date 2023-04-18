@@ -6,7 +6,7 @@ import {
 } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { INestApplication } from '@nestjs/common';
-import cfg from './config/app.config';
+import { CfgService } from './module/configuration/cfg.service';
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);
@@ -21,7 +21,10 @@ async function bootstrap(): Promise<void> {
 
   app.enableCors();
 
-  const PORT: string = cfg.APP_PORT;
+  const cfg = app.get(CfgService);
+  const PORT = cfg.APP_PORT;
   await app.listen(PORT);
+
+  console.log(`Server listen port: ${PORT}`);
 }
 bootstrap();

@@ -1,23 +1,29 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { dataSourcePostgres } from './config/datasource';
-import { AuthModule } from './module/auth/auth.module';
-import { AuthorModule } from './module/book-catalog/author/author.module';
-import { BookModule } from './module/book-catalog/book/book.module';
-import { GenreModule } from './module/book-catalog/genre/genre.module';
+import { CfgModule } from './module/configuration/cfg.module';
+import { CfgService } from './module/configuration/cfg.service';
+import { RootModule } from './module/root.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        autoLoadEntities: true
+      imports: [ CfgModule ],
+      inject: [ CfgService ],
+      useFactory: (cfg: CfgService) => ({
+        type: "postgres",
+        host: cfg.APP_POSTGRES_HOST,
+        port: cfg.APP_POSTGRES_PORT,
+        username: cfg.APP_POSTGRES_USERNAME,
+        password: cfg.APP_POSTGRES_PASSWORD,
+        database: cfg.APP_POSTGRES_DATABASE,
+        synchronize: false,
+        autoLoadEntities: true,
+        subscribers: ["src/subscriber/*.{ts, js}"],
+        migrations: ["src/migration/*.{ts, js}"],
+        logging: cfg.APP_POSTGRES_LOGGING,
       }),
-      dataSourceFactory: async () => dataSourcePostgres
     }),
-    AuthModule,
-    BookModule,
-    AuthorModule,
-    GenreModule,
+    RootModule,
   ],
 })
 export class AppModule {}
