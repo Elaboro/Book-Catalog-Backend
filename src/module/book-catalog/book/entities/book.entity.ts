@@ -30,4 +30,9 @@ export class Book extends BaseEntity {
   @ManyToMany(() => Author, (author) => author.book_list)
   @JoinTable()
   author_list: Author[];
+
+  @Column({
+    nullable: true,
+  })
+  deleted: Date;
 }
