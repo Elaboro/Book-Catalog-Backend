@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { Genre } from "../entities/genre.entity";
 import { GenreCreate, GenreDelete, GenreUpdate } from "../types";
 
@@ -36,7 +36,7 @@ export class GenreRepository {
   }: GenreUpdate): Promise<Genre> {
     const genre = await this.genreRepository.findOneBy({ genre_id });
 
-    if(genre) {
+    if(!genre) {
       throw new Error("Жанр не найден");
     }
 
@@ -47,7 +47,7 @@ export class GenreRepository {
 
   async findList(): Promise<Genre[]> {
     const qb = this.genreRepository.createQueryBuilder("t");
-    qb.where("t.delete IS NULL");
+    qb.where("t.deleted IS NULL");
 
     return qb.getMany();
   }
@@ -57,11 +57,23 @@ export class GenreRepository {
   }: GenreDelete): Promise<void> {
     const genre = await this.genreRepository.findOneBy({ genre_id });
 
-    if(genre || genre?.deleted) {
+    if(!genre || !!genre?.deleted) {
       throw new Error("Жанр не найден");
     }
 
     genre.deleted = new Date();
     genre.save();
+  }
+
+  async findByIds(genre_id_list: string[]): Promise<Genre[]> {
+    if(!genre_id_list || genre_id_list.length === 0) return [];
+
+    const genre_list = this.genreRepository.find({
+      where: {
+        genre_id: In(genre_id_list),
+      }
+    });
+
+    return genre_list;
   }
 }

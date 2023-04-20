@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 import { Author } from "../entities/author.entity";
 import { AuthorCreate, AuthorDelete, AuthorUpdate } from "../types";
 
@@ -39,7 +39,7 @@ export class AuthorRepository {
   }: AuthorUpdate): Promise<Author> {
     const author = await this.authorRepository.findOneBy({ author_id });
 
-    if(author) {
+    if(!author) {
       throw new Error("Автор не найден");
     }
 
@@ -51,7 +51,7 @@ export class AuthorRepository {
 
   async findList(): Promise<Author[]> {
     const qb = this.authorRepository.createQueryBuilder("t");
-    qb.where("t.delete IS NULL");
+    qb.where("t.deleted IS NULL");
 
     return qb.getMany();
   }
@@ -59,11 +59,23 @@ export class AuthorRepository {
   async delete({ author_id }: AuthorDelete): Promise<void> {
     const author = await this.authorRepository.findOneBy({ author_id });
 
-    if(author || author?.deleted) {
+    if(!author || !!author?.deleted) {
       throw new Error("Автор не найден");
     }
 
     author.deleted = new Date();
     author.save();
+  }
+
+  async findByIds(author_id_list: string[]): Promise<Author[]> {
+    if(!author_id_list || author_id_list.length === 0) return [];
+
+    const author_list = this.authorRepository.find({
+      where: {
+        author_id: In(author_id_list),
+      },
+    });
+
+    return author_list;
   }
 }

@@ -48,7 +48,7 @@ export class BookRepository {
   }: BookUpdate): Promise<Book> {
     const book = await this.bookRepository.findOneBy({ book_id });
 
-    if(book) {
+    if(!book) {
       throw new Error("Книга не найдена");
     }
 
@@ -73,7 +73,7 @@ export class BookRepository {
   }: BookDelete): Promise<void> {
     const book = await this.bookRepository.findOneBy({ book_id });
 
-    if(book || book?.deleted) {
+    if(!book || !!book?.deleted) {
       throw new Error("Книга не найдена");
     }
 

@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { CfgService } from './module/configuration/cfg.service';
 import swaggerCreate from './utils/swagger';
 
@@ -9,6 +9,7 @@ async function bootstrap(): Promise<void> {
 
   swaggerCreate(app);
   app.enableCors();
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   const cfg = app.get(CfgService);
   const PORT = cfg.APP_PORT;
