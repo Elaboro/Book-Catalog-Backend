@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Response } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, Response, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { Response as IResponse } from "express";
+import { JwtAuthGuard } from '../../auth/guards/auth-jwt.guard';
 import { BookService } from './book.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
@@ -14,6 +15,8 @@ export class BookController {
   @ApiOperation({
     summary: "Добавить новую книгу."
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createBookDto: CreateBookDto) {
     return this.bookService.create(createBookDto);
@@ -35,6 +38,8 @@ export class BookController {
   @ApiOperation({
     summary: "Редактировать книгу."
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
     return this.bookService.update(+id, updateBookDto);
@@ -43,6 +48,8 @@ export class BookController {
   @ApiOperation({
     summary: "Удалить книгу."
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.bookService.remove(id);
@@ -51,6 +58,8 @@ export class BookController {
   @ApiOperation({
     summary: "Загрузить книгу.",
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @ApiConsumes("multipart/form-data")
   @Post("upload")
   @UseInterceptors(FileInterceptor("book_file"))

@@ -4,12 +4,14 @@ import { AuthorController } from './author.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Author } from './entities/author.entity';
 import { AuthorRepository } from './repository/author.repository';
+import { AuthModule } from '../../auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Author,
     ]),
+    AuthModule,
   ],
   controllers: [AuthorController],
   providers: [

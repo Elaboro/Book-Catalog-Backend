@@ -7,12 +7,14 @@ import { BookRepository } from './repository/book.repository';
 import { GenreModule } from '../genre/genre.module';
 import { AuthorModule } from '../author/author.module';
 import { StorageModule } from '../../storage/storage.module';
+import { AuthModule } from '../../auth/auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Book,
     ]),
+    AuthModule,
     GenreModule,
     AuthorModule,
     StorageModule,
