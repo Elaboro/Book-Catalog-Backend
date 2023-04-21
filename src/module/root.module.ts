@@ -4,6 +4,7 @@ import { AuthorModule } from "./book-catalog/author/author.module";
 import { BookModule } from "./book-catalog/book/book.module";
 import { GenreModule } from "./book-catalog/genre/genre.module";
 import { CfgModule } from "./configuration/cfg.module";
+import { StorageModule } from "./storage/storage.module";
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { CfgModule } from "./configuration/cfg.module";
     BookModule,
     AuthorModule,
     GenreModule,
+    StorageModule,
   ],
 })
 export class RootModule {}

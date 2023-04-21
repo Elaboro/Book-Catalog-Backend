@@ -80,4 +80,21 @@ export class BookRepository {
     book.deleted = new Date();
     book.save();
   }
+
+  async findById(book_id: string): Promise<Book> {
+    const book = await this.bookRepository.findOne({
+      relations: {
+        file: true,
+      },
+      where: {
+        book_id
+      },
+    });
+
+    if(!book || !!book?.deleted) {
+      throw new Error("Книга не найдена");
+    }
+
+    return book;
+  }
 }

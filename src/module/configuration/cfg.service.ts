@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import path from "path";
 
 @Injectable()
 export class CfgService {
@@ -51,5 +52,9 @@ export class CfgService {
   get APP_JWT_EXPIRATION_TIME(): string {
     const value = this.configService.get("APP_JWT_EXPIRATION_TIME");
     return String(value);
+  }
+
+  get DIR_STORAGE(): string {
+    return path.join(__dirname, '..', '..', '..', 'storage');
   }
 }

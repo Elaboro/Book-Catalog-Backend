@@ -6,6 +6,7 @@ import { Book } from './entities/book.entity';
 import { BookRepository } from './repository/book.repository';
 import { GenreModule } from '../genre/genre.module';
 import { AuthorModule } from '../author/author.module';
+import { StorageModule } from '../../storage/storage.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AuthorModule } from '../author/author.module';
     ]),
     GenreModule,
     AuthorModule,
+    StorageModule,
   ],
   controllers: [BookController],
   providers: [

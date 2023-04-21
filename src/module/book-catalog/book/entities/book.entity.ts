@@ -1,5 +1,5 @@
-import { cp } from "fs";
-import { BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Storage } from "../../../storage/entities/storage.entity";
 import { Author } from "../../author/entities/author.entity";
 import { Genre } from "../../genre/entities/genre.entity";
 
@@ -35,4 +35,8 @@ export class Book extends BaseEntity {
     nullable: true,
   })
   deleted: Date;
+
+  @OneToOne(() => Storage)
+  @JoinColumn()
+  file: Storage;
 }

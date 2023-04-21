@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { removeFieldDeleted } from '../../../utils/common/cleaner';
+import { StorageLocalService } from '../../storage/storage-local.service';
 import { AuthorRepository } from '../author/repository/author.repository';
 import { GenreRepository } from '../genre/repository/genre.repository';
 import { CreateBookDto } from './dto/create-book.dto';
+import { DownloadBookDto } from './dto/download-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { UploadBookDto } from './dto/upload-book.dto';
 import { BookRepository } from './repository/book.repository';
 
 @Injectable()
@@ -13,6 +16,7 @@ export class BookService {
     private readonly bookRepository: BookRepository,
     private readonly genreRepository: GenreRepository,
     private readonly authorRepository: AuthorRepository,
+    private readonly storageLocalService: StorageLocalService,
   ) {}
 
   async create({
@@ -94,5 +98,40 @@ export class BookService {
     return this.bookRepository.delete({
       book_id,
     });
+  }
+
+  async upload({
+    book_id,
+    book_file,
+  }: UploadBookDto) {
+    const book = await this.bookRepository.findById(book_id);
+
+    if(!book) {
+      throw new Error("Книга не найдена");
+    }
+
+    const storage = await this.storageLocalService.upload(book_file);
+
+    book.file = storage;
+    await book.save();
+
+    const result = {
+      ...removeFieldDeleted(book),
+      author_list: removeFieldDeleted(book.author_list),
+      genre_list: removeFieldDeleted(book.genre_list),
+    };
+    return result;
+  }
+
+  async download({
+    book_id,
+  }: DownloadBookDto) {
+    const book = await this.bookRepository.findById(book_id);
+
+    if(!book || book?.file === null) {
+      throw new Error("Книга не найдена");
+    }
+
+    return this.storageLocalService.download(book.file.file_id);
   }
 }
